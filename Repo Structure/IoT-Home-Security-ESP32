@@ -1,0 +1,11 @@
+IoT-Home-Security-ESP32/
+│
+├── ESP32_Code/
+│   └── home_security_esp32.ino   <-- Real hardware code
+│
+├── Web_Demo_For_GitHub/
+│   └── app.py                    <-- This shows output on GitHub
+│
+├── circuit_diagram.png           <-- Use the image I made above
+│
+└── README.md
