@@ -1,0 +1,54 @@
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+
+// Replace with your details
+char auth[] = "YourBlynkAuthToken";
+char ssid[] = "YourWiFiName";
+char pass[] = "YourWiFiPassword";
+
+#define PIR_PIN 13      // PIR Motion Sensor
+#define DOOR_PIN 12     // Magnetic Door Sensor (Reed Switch)
+#define BUZZER_PIN 14   // Buzzer
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(PIR_PIN, INPUT);
+  pinMode(DOOR_PIN, INPUT_PULLUP); // Door sensor gives LOW when open
+  pinMode(BUZZER_PIN, OUTPUT);
+  
+  Blynk.begin(auth, ssid, pass);
+}
+
+void loop() {
+  Blynk.run();
+
+  int motion = digitalRead(PIR_PIN);
+  int door = digitalRead(DOOR_PIN);
+
+  if (motion == HIGH) {
+    Serial.println("ALERT! Motion Detected!");
+    Blynk.logEvent("motion_alert", "Motion Detected at Home!");
+    Blynk.virtualWrite(V1, "Motion Detected!");
+    digitalWrite(BUZZER_PIN, HIGH);
+  } else {
+    Blynk.virtualWrite(V1, "No Motion");
+  }
+
+  if (door == LOW) {
+    Serial.println("ALERT! Door Opened!");
+    Blynk.logEvent("door_alert", "Door Opened!");
+    Blynk.virtualWrite(V2, "Door Opened!");
+    digitalWrite(BUZZER_PIN, HIGH);
+  } else {
+    Blynk.virtualWrite(V2, "Door Closed");
+  }
+
+  if (motion == LOW && door == HIGH) {
+    digitalWrite(BUZZER_PIN, LOW);
+    Blynk.virtualWrite(V0, "Status: SAFE");
+  } else {
+    Blynk.virtualWrite(V0, "Status: ALERT!");
+  }
+  
+  delay(1000);
+}
